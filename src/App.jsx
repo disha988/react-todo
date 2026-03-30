@@ -13,8 +13,6 @@
 //   }
 //   console.log(todo)
 
-
-
 //   return (
 //     <>
 //       <h1>Todo App</h1>
@@ -51,7 +49,7 @@
 
 //   function addTodo(val) {
 //     setTodo([...todo, { id: Date.now(), title: val }])
-   
+
 //   }
 
 //   return (
@@ -79,7 +77,7 @@
 
 //   function addTodo(val) {
 //     setTodo([...todo, { id: Date.now(), title: val }])
-   
+
 //   }
 
 // useEffect(()=>{
@@ -110,7 +108,7 @@
 
 //   function addTodo(val) {
 //     setTodo([...todo, { id: Date.now(), title: val }])
-   
+
 //   }
 
 
@@ -140,59 +138,142 @@
 
 //delete using Modals
 
+// import { useEffect, useState } from "react"
+// import TodoForm from "./pages/TodoForm"
+// import TodoList from "./pages/TodoList"
+// import DeleteModal from "./components/DeleteModal";
+
+// function App() {
+//   const [todo, setTodo] = useState(() => {
+//     const storedTodos = localStorage.getItem('data');
+//     return storedTodos ? JSON.parse(storedTodos) : []})
+
+//     const [delModal, setDelModal] = useState(false)
+//     const [todoToDel, setTodoToDel] =useState(null)
+
+//   function addTodo(val) {
+//     setTodo([...todo, { id: Date.now(), title: val }])
+
+//   }
+
+//   const handleDeleteClick = (id)=>{
+//     setDelModal(true)
+//     setTodoToDel(id)
+//   }
+
+//   function cancelDel(){
+//     setDelModal(false)
+//     setTodoToDel(null)
+//   }
+
+//   function confirmDel (){
+//     setTodo(todo.filter((item)=>item.id !== todoToDel))
+//      setDelModal(false)
+//     setTodoToDel(null)
+
+//   }
+
+
+// useEffect(()=>{
+//   localStorage.setItem('data', JSON.stringify(todo));
+// },[todo])
+
+
+//   return (
+//     <>
+//       <h1>Todo App</h1>
+//       <TodoForm addTodo={addTodo}/>
+//       <TodoList todo={todo} delTodo={handleDeleteClick}/>
+
+//       {delModal && (<DeleteModal cancelDel={cancelDel} confirmDel={confirmDel}/>)}
+//     </>
+//   )
+// }
+
+// export default App
+
+
+//edit
 import { useEffect, useState } from "react"
 import TodoForm from "./pages/TodoForm"
 import TodoList from "./pages/TodoList"
 import DeleteModal from "./components/DeleteModal";
+import UpdateModal from "./components/UpdateModal";
 
 function App() {
   const [todo, setTodo] = useState(() => {
     const storedTodos = localStorage.getItem('data');
-    return storedTodos ? JSON.parse(storedTodos) : []})
+    return storedTodos ? JSON.parse(storedTodos) : []
+  })
 
-    const [delModal, setDelModal] = useState(false)
-    const [todoToDel, setTodoToDel] =useState(null)
+  const [delModal, setDelModal] = useState(false)
+  const [todoToDel, setTodoToDel] = useState(null)
+
+  const [editModal, setEditModal] = useState(false)
+  const [todoToEdit, setTodoToEdit] = useState(null)
 
   function addTodo(val) {
     setTodo([...todo, { id: Date.now(), title: val }])
-   
+
   }
 
-  const handleDeleteClick = (id)=>{
+  //delete
+  const handleDeleteClick = (id) => {
     setDelModal(true)
     setTodoToDel(id)
   }
 
-  function cancelDel(){
+  function cancelDel() {
     setDelModal(false)
     setTodoToDel(null)
   }
 
-  function confirmDel (){
-    setTodo(todo.filter((item)=>item.id !== todoToDel))
-     setDelModal(false)
+  function confirmDel() {
+    setTodo(todo.filter((item) => item.id !== todoToDel))
+    setDelModal(false)
     setTodoToDel(null)
 
   }
 
-// function delTodo(id){
-//   console.log(id)
-//   setTodo(todo.filter((item)=>item.id !== id))
-// }
+  //update
+  const handleEditClick = (todo) => {
+    setEditModal(true)
+    setTodoToEdit(todo)
+  }
+
+  function cancelEdit() {
+    setEditModal(false)
+    setTodoToEdit(null)
+  }
+
+  function confirmEdit(newText) {
+    console.log("newText", newText)
+    setTodo(todo.map((todo) =>
+      todo.id === todoToEdit.id ? { ...todo, title: newText } : todo
+    ))
+
+    setEditModal(false)
+    setTodoToEdit(null)
+
+  }
 
 
-useEffect(()=>{
-  localStorage.setItem('data', JSON.stringify(todo));
-},[todo])
+  useEffect(() => {
+    localStorage.setItem('data', JSON.stringify(todo));
+  }, [todo])
 
 
   return (
     <>
       <h1>Todo App</h1>
-      <TodoForm addTodo={addTodo}/>
-      <TodoList todo={todo} delTodo={handleDeleteClick}/>
+      <TodoForm addTodo={addTodo} />
+      <TodoList todo={todo} delTodo={handleDeleteClick} editTodo={handleEditClick} />
 
-      {delModal && (<DeleteModal cancelDel={cancelDel} confirmDel={confirmDel}/>)}
+      {/* delete */}
+      {delModal && (<DeleteModal cancelDel={cancelDel} confirmDel={confirmDel} />)}
+
+      {/* edit */}
+      {editModal && (<UpdateModal cancelEdit={cancelEdit} confirmEdit={confirmEdit} currentText={todoToEdit.title}/>)}
     </>
   )
 }
